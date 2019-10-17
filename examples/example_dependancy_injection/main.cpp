@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <functional>
+#include <memory>
 #include "ServiceLocator.hpp"
 
 template <class T>

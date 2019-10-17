@@ -2,6 +2,7 @@
 #include <catch.hpp>
 
 #include <vector>
+#include <functional>
 #include "ServiceLocator.hpp"
 
 class ITest {
