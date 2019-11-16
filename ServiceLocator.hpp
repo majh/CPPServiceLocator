@@ -28,7 +28,8 @@ private:
     std::string _message;
 
 public:
-    ServiceLocatorException(const std::string& message) : _message(message) {
+    ServiceLocatorException(const std::string& message) :
+        _message(message) {
     }
 
     const std::string& getMessage() const {
@@ -38,25 +39,29 @@ public:
 
 class DuplicateBindingException : public ServiceLocatorException {
 public:
-    DuplicateBindingException(const std::string& message) : ServiceLocatorException(message) {
+    DuplicateBindingException(const std::string& message) :
+        ServiceLocatorException(message) {
     }
 };
 
 class RecursiveResolveException : public ServiceLocatorException {
 public:
-    RecursiveResolveException(const std::string& message) : ServiceLocatorException(message) {
+    RecursiveResolveException(const std::string& message) :
+        ServiceLocatorException(message) {
     }
 };
 
 class BindingIssueException : public ServiceLocatorException {
 public:
-    BindingIssueException(const std::string& message) : ServiceLocatorException(message) {
+    BindingIssueException(const std::string& message) :
+        ServiceLocatorException(message) {
     }
 };
 
 class UnableToResolveException : public ServiceLocatorException {
 public:
-    UnableToResolveException(const std::string& message) : ServiceLocatorException(message) {
+    UnableToResolveException(const std::string& message) :
+        ServiceLocatorException(message) {
     }
 };
 
@@ -144,10 +149,12 @@ public:
 
         }
 
-        Context(Context* parent, const std::type_index interfaceType, const std::string& name) : Context(parent->_root, parent, parent->_sl, interfaceType, name) {
+        Context(Context* parent, const std::type_index interfaceType, const std::string& name) :
+            Context(parent->_root, parent, parent->_sl, interfaceType, name) {
         }
 
-        Context(wptr<ServiceLocator> sl, const std::type_index interfaceType, const std::string& name) : Context(this, nullptr, sl, interfaceType, name) {
+        Context(wptr<ServiceLocator> sl, const std::type_index interfaceType, const std::string& name) :
+            Context(this, nullptr, sl, interfaceType, name) {
         }
 
         Context(wptr<ServiceLocator> sl) : Context(this, nullptr, sl, std::type_index(typeid(void)), "") {
