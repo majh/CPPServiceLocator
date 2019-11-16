@@ -66,6 +66,9 @@ public:
     
     class Context {
     private:
+        Context& operator=(const Context&) = delete; // non copyable
+        Context(const Context&) = delete;            // non construction-copyable
+
         // Only the root Context will run the AfterResolveList - this allows circular dependancies to
         // resolve by using afterResolve property injection
         Context* _root;
@@ -128,7 +131,17 @@ public:
         }
         
     public:
-        Context(Context* root, Context* parent, wptr<ServiceLocator> sl, const std::type_index interfaceType, const std::string& name) : _root(root), _parent(parent), _sl(sl), _interfaceType(interfaceType), _name(name) {
+        Context(Context* root, Context* parent, wptr<ServiceLocator> sl, const std::type_index interfaceType, const std::string& name) :
+            _root(root),
+            _parent(parent),
+            _sl(sl),
+            _interfaceType(interfaceType),
+            _interfaceTypeName(),
+            _name(name),
+            _concreteType(),
+            _concreteTypeName()
+        {
+
         }
 
         Context(Context* parent, const std::type_index interfaceType, const std::string& name) : Context(parent->_root, parent, parent->_sl, interfaceType, name) {
@@ -250,7 +263,7 @@ public:
             // We lock the weak_ptr to our ServiceLocator, the lock returns a shared_ptr which will keep
             // it alive into the returned lambda via the capture of sl
             auto sl = _sl.lock();
-            return [sl] (const std::string& name = "") {
+            return [sl] (const std::string& name) {
                 auto ctx = sptr<Context>(new Context(sl, std::type_index(typeid(IFace)), name));
                 // Don't need to check for recursive resolve since this is a provider (root) call
                 auto ptr = sl->_resolve<IFace>(ctx);
@@ -265,7 +278,7 @@ public:
             // We lock the weak_ptr to our ServiceLocator, the lock returns a shared_ptr which will keep
             // it alive into the returned lambda via the capture of sl
             auto sl = _sl.lock();
-            return [sl] (const std::string& name = "") {
+            return [sl] (const std::string& name) {
                 auto ctx = sptr<Context>(new Context(sl, std::type_index(typeid(IFace)), name));
                 // Don't need to check for recursive resolve since this is a tryProvider (root) call
                 auto ptr = sl->_tryResolve<IFace>(ctx);
@@ -300,6 +313,9 @@ public:
     };
     
 private:
+    ServiceLocator& operator=(const ServiceLocator&) = delete; // non copyable
+    ServiceLocator(const ServiceLocator&) = delete;            // non construction-copyable
+
     class AnyServiceLocator {
     public:
         virtual ~AnyServiceLocator() {
@@ -567,7 +583,14 @@ private:
     }
 
     // Child locators keep a shared_ptr to their parent
-    ServiceLocator(sptr<ServiceLocator> parent) : _parent(parent) {
+    ServiceLocator(sptr<ServiceLocator> parent) :
+        _typed_locators(),
+        _eagerBindings(),
+        _parent(parent),
+        _context(),
+        _this(),
+        _module_clause()
+    {
     }
     
     // Resolve a named interface, throws if not able to resolve
@@ -717,6 +740,7 @@ public:
         
     public:
         virtual void load() = 0;
+        virtual ~Module();
     };
     
     
